@@ -1,6 +1,8 @@
+import { useWindowWidth } from "@react-hook/window-size";
 import "mapbox-gl/dist/mapbox-gl.css";
 import React, { useEffect, useRef, useState } from "react";
 import Map, { Layer, Marker, Source, useMap } from "react-map-gl";
+import "./App.css";
 import Places from "./components/Places";
 import Steps from "./components/Steps";
 import styleJson from "./style.json";
@@ -9,9 +11,9 @@ import { MAPBOX_TOKEN } from "./util/config";
 function MapContainer() {
   const map = useRef();
   const mapGl = useMap();
+  const width = useWindowWidth();
+  const isMobile = width < 768;
   const [viewState, setViewState] = useState({
-    latitude: 38.8951,
-    longitude: -77.0364,
     zoom: 10,
     bearing: 0,
   });
@@ -130,6 +132,7 @@ function MapContainer() {
     >
       <Places
         position="top-right"
+        isMobile={isMobile}
         onStart={(start) => {
           setStart(start.geometry.coordinates);
         }}
@@ -140,69 +143,77 @@ function MapContainer() {
           setRouteStarted(true);
         }}
       />
-      {routeStarted && steps.length > 0 ? <Steps steps={steps} /> : null}
-      <Map
-        ref={map}
-        {...viewState}
-        initialViewState={viewState}
-        onMove={(evt) => setViewState(evt.viewState)}
-        mapStyle={styleJson}
-        mapboxAccessToken={MAPBOX_TOKEN}
-        minZoom={5}
-        maxZoom={20}
-        attributionControl={false}
-        onClick={(evt) => {
-          setStart([evt.lngLat.lng, evt.lngLat.lat]);
-        }}
-        pitch={routeStarted ? 60 : 0}
-        logoControl={false}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <Source id="my-data" type="geojson" data={routeData}>
-          <Layer
-            id="route"
-            type="line"
-            source="my-data"
-            paint={{
-              "line-color": "#007cbf",
-              "line-width": routeStarted ? 8 : 5,
-            }}
-            layout={{
-              "line-join": "round",
-              "line-cap": "round",
-            }}
-          />
-        </Source>
-        <Marker
-          longitude={start[0]}
-          latitude={start[1]}
-          rotationAlignment="auto"
-          anchor="center"
+      {routeStarted && steps.length > 0 ? (
+        <Steps
+          steps={steps}
+          position={isMobile ? "bottom" : "top-left"}
+          isMobile={isMobile}
+        />
+      ) : null}
+      {viewState.latitude && viewState.longitude ? (
+        <Map
+          ref={map}
+          {...viewState}
+          initialViewState={viewState}
+          onMove={(evt) => setViewState(evt.viewState)}
+          mapStyle={styleJson}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          minZoom={5}
+          maxZoom={20}
+          attributionControl={false}
+          onClick={(evt) => {
+            setStart([evt.lngLat.lng, evt.lngLat.lat]);
+          }}
+          pitch={routeStarted ? 60 : 0}
+          logoControl={false}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
         >
-          <img
-            src={startIcon.src}
-            style={{
-              width: 30,
-              height: 30,
-            }}
-          />
-        </Marker>
-        {end.length ? (
-          <Marker longitude={end[0]} latitude={end[1]}>
-            <div
-              style={{
-                width: 15,
-                height: 15,
-                backgroundColor: "red",
-                borderRadius: "50%",
+          <Source id="my-data" type="geojson" data={routeData}>
+            <Layer
+              id="route"
+              type="line"
+              source="my-data"
+              paint={{
+                "line-color": "#007cbf",
+                "line-width": routeStarted ? 8 : 5,
               }}
-            ></div>
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+            />
+          </Source>
+          <Marker
+            longitude={start[0]}
+            latitude={start[1]}
+            rotationAlignment="auto"
+            anchor="center"
+          >
+            <img
+              src={startIcon.src}
+              style={{
+                width: 30,
+                height: 30,
+              }}
+            />
           </Marker>
-        ) : null}
-      </Map>
+          {end.length ? (
+            <Marker longitude={end[0]} latitude={end[1]}>
+              <div
+                style={{
+                  width: 15,
+                  height: 15,
+                  backgroundColor: "red",
+                  borderRadius: "50%",
+                }}
+              ></div>
+            </Marker>
+          ) : null}
+        </Map>
+      ) : null}
     </div>
   );
 }

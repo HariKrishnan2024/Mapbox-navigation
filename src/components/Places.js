@@ -5,6 +5,7 @@ import { MAPBOX_TOKEN } from "../util/config";
 
 const Places = ({
   position = "top-left",
+  isMobile = false,
   onStart = () => {},
   onDestination = () => {},
   onRouteStart = () => {},
@@ -79,7 +80,7 @@ const Places = ({
     <div
       style={{
         minHeight: 100,
-        width: 300,
+        width: isMobile ? "90%" : 300,
         padding: "15px",
         backgroundColor: "#fff",
         position: "absolute",
@@ -142,7 +143,7 @@ const Places = ({
             onStart(places[start.key]);
           }}
           size="large"
-          style={{ width: 250 }}
+          style={{ width: "100%" }}
         />
 
         <Select
@@ -163,7 +164,7 @@ const Places = ({
             onDestination(places[end.key]);
           }}
           size="large"
-          style={{ width: 250 }}
+          style={{ width: "100%" }}
         />
         <Button
           style={{

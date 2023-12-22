@@ -2,15 +2,37 @@ import { ArrowUpOutlined } from "@ant-design/icons";
 import moment from "moment";
 import React from "react";
 
-const Steps = ({ steps = [] }) => {
+const Steps = ({ steps = [], position = "top-left", isMobile = false }) => {
   let time = moment.utc(1000 * steps[0].duration).format("HH[h] mm[m]");
   time = time.replace("00h", "");
+
+  const positionStyle = {
+    "top-left": {
+      top: "10px",
+      left: "10px",
+    },
+    "top-right": {
+      top: "10px",
+      right: "10px",
+    },
+    "bottom-left": {
+      bottom: "10px",
+      left: "10px",
+    },
+    "bottom-right": {
+      bottom: "10px",
+      right: "10px",
+    },
+    bottom: {
+      bottom: 30,
+      width: "100%",
+      minHeight: 100,
+    },
+  };
   return (
     <div
       style={{
         position: "absolute",
-        left: 10,
-        top: 10,
         minHeight: 50,
         width: 300,
         zIndex: 1,
@@ -20,6 +42,7 @@ const Steps = ({ steps = [] }) => {
         padding: "15px",
         display: "flex",
         gap: 20,
+        ...positionStyle[position],
       }}
     >
       <ArrowUpOutlined

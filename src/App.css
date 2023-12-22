@@ -36,3 +36,6 @@
     transform: rotate(360deg);
   }
 }
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
